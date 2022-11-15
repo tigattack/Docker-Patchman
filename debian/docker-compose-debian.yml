@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  patchman:
+    image: patchman:latest
+    container_name: patchman
+    restart: always
+    ports:
+      - '8014:80'
+    environment:
+      ADMIN_USERNAME: myname
+      ADMIN_EMAIL: contact@me.com
+      ADMIN_PASSWORD: SuperSecurePassword!
+      SECRET_KEY: SuperSecureKey!

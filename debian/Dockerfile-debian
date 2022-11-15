@@ -1,0 +1,36 @@
+FROM python:3.9-bullseye
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && \
+  apt-get install --no-install-recommends -y \
+    git \
+    gcc \
+    libxml2-dev \
+    libxslt1-dev \
+    zlib1g-dev \
+    python3-dev \
+    python3-apt && \
+  apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/furlongm/patchman.git /app && \
+  git --git-dir /app/.git checkout tags/v2.0.3 -b latest
+
+ADD configs/ /
+
+WORKDIR /app
+
+RUN python -m pip install \
+    --no-cache-dir \
+    --upgrade \
+    --no-warn-script-location \
+    -r requirements.txt \
+    -r requirements-extra-debian.txt &&\
+  # Patch patchman's settings.py so it can find our config
+  sed -i -E "s#(sys.prefix == )'/usr'#\1'/usr/local'#g" patchman/settings.py &&\
+  # Install patchman
+  ./setup.py install
+
+ADD entry.sh /entry.sh
+RUN chmod 755 /entry.sh
+ENTRYPOINT ["/entry.sh"]
