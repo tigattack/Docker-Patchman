@@ -56,7 +56,7 @@ services:
       interval: 10s
 
   postgres:
-    image: postgres:16.6-alpine
+    image: postgres:16.7-alpine
     restart: unless-stopped
     healthcheck:
       test:
